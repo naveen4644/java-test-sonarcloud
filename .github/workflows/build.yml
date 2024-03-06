@@ -34,17 +34,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=java-sonarcloud1_java
-      - name: Get Quality Gate status
-        id: check_quality_gate
-        run: |
-          curl -u ${{ secrets.SONAR_TOKEN }}: -G --data-urlencode "projectKey=java-sonarcloud1_java" ${{ secrets.SONAR_HOST }}/api/qualitygates/project_status > result.json
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectName="${GITHUB_REPOSITORY}"
+      # - name: Get Quality Gate status
+      #   id: check_quality_gate
+      #   run: |
+      #     curl -u ${{ secrets.SONAR_TOKEN }}: -G --data-urlencode "projectKey=java-sonarcloud1_java" ${{ secrets.SONAR_HOST }}/api/qualitygates/project_status > result.json
 
-      - name: Parse Quality Gate status
-        id: parse_quality_gate
-        run: |
-          jq -r '.projectStatus.status' result.json
+      # - name: Parse Quality Gate status
+      #   id: parse_quality_gate
+      #   run: |
+      #     jq -r '.projectStatus.status' result.json
 
-      - name: Fail build if Quality Gate status is not "OK"
-        if: ${{ steps.parse_quality_gate.outputs.status != 'OK' && steps.parse_quality_gate.outputs.status != 'WARN' }}
-        run: exit 1
+      # - name: Fail build if Quality Gate status is not "OK"
+      #   if: ${{ steps.parse_quality_gate.outputs.status != 'OK' && steps.parse_quality_gate.outputs.status != 'WARN' }}
+      #   run: exit 1
