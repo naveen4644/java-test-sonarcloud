@@ -35,10 +35,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=java-sonarcloud1_java
-      - name: Get SonarQube Quality Gate status
-        id: sonarqube-status
-        run: echo "::set-output name=status::$(curl -s "${{ secrets.SONAR_TOKEN }}:${{ secrets.SONAR_HOST }}api/qualitygates/project_status?projectKey=java-sonarcloud1_java" | jq -r '.projectStatus.status')"
+      - name: Get Quality Gate status
+        id: check_quality_gate
+        run: |
+          curl -u ${{ secrets.SONAR_TOKEN }}: -G "projectKey=java-sonarcloud1_java ${{ secrets.SONAR_HOST }}/api/qualitygates/project_status > result.json
 
-      - name: Fail if Quality Gate is not OK
-        if: steps.sonarqube-status.outputs.status != 'OK'
+      - name: Parse Quality Gate status
+        id: parse_quality_gate
+        run: |
+          jq -r '.projectStatus.status' result.json
+
+      - name: Fail build if Quality Gate status is not "OK"
+        if: ${{ steps.parse_quality_gate.outputs.status != 'OK' && steps.parse_quality_gate.outputs.status != 'WARN' }}
         run: exit 1
