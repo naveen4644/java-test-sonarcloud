@@ -38,7 +38,7 @@ jobs:
       - name: Get Quality Gate status
         id: check_quality_gate
         run: |
-          curl -u ${{ secrets.SONAR_TOKEN }}: -G "projectKey=java-sonarcloud1_java ${{ secrets.SONAR_HOST }}/api/qualitygates/project_status > result.json
+          curl -u ${{ secrets.SONAR_TOKEN }}: -G "projectKey=java-sonarcloud1_java" ${{ secrets.SONAR_HOST }}/api/qualitygates/project_status > result.json
 
       - name: Parse Quality Gate status
         id: parse_quality_gate
