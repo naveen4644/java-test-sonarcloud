@@ -37,7 +37,7 @@ jobs:
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=java-sonarcloud1_java
       - name: Get Quality Gate status
         id: check_quality_gate
-        run: echo "::set-output name=status::$(curl -s -u ${{ secrets.SONAR_TOKEN }}:${{ secrets.SONAR_HOST }}/api/qualitygates/project_status?projectKey=<your_project_key> | jq -r '.projectStatus.status')"
+        run: echo "::set-output name=status::$(curl -s -u ${{ secrets.SONAR_TOKEN }}:${{ secrets.SONAR_HOST }}/api/qualitygates/project_status?projectKey=java-sonarcloud1_java | jq -r '.projectStatus.status')"
 
       - name: Fail build if Quality Gate status is not "OK"
         if: ${{ steps.check_quality_gate.outputs.status != 'OK' && steps.check_quality_gate.outputs.status != 'WARN' }}
